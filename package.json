@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/magotts/tinyapp/issues"
   },
-  "homepage": "https://github.com/magotts/tinyapp#readme"
+  "homepage": "https://github.com/magotts/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
