@@ -41,13 +41,10 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   const shortURL = generateRandomString();
-  console.log(`shortURL is ${shortURL}`);
   const longURL = req.body.longURL;
-  console.log(`req body longURL is ${longURL}`);
   urlDatabase[shortURL] = longURL;
-  console.log(`urlDatabase[shortURL] is ${urlDatabase[shortURL]}`);
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -56,6 +53,11 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.post("/urls/:shortURL/delete", (req, res) => { /// working on this
+  const shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  res.redirect("/urls");
+});
 
 
 app.listen(PORT, () => {
