@@ -11,8 +11,8 @@ app.use(cookieParser());
 const users = {
   "userRandomID": {
     id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    email: "a@a.com",
+    password: "aaa"
   },
   "user2RandomID": {
     id: "user2RandomID",
@@ -24,6 +24,15 @@ const users = {
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
+};
+
+const getUserByEmail = (email, users) => {
+  for (const userId in users) {
+    if (users[userId].email === email) {
+      return users[userId];
+    }
+  }
+  return false;
 };
 
 app.get("/", (req, res) => {
@@ -88,10 +97,21 @@ app.post("/urls/:shortURL", (req, res) => { /// edit the url
 
 app.post("/login", (req, res) => { /// cookie username
   const { email, password } = req.body;
-  // let username = req.body.username;
-  // res.cookie("username", username);
+  const user = getUserByEmail(email, users);
+  if (!user) {
+    return res.status(403).send("Email address is not found.");
+  }
+  if (user.password !== password) {
+    return res.status(403).send("Wrong credentials.");
+  }
+  res.cookie("user_id", user.id);
   res.redirect("/urls");
 });
+
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 
 app.post("/logout", (req, res) => { //logout
   res.clearCookie("user_id");
@@ -104,9 +124,6 @@ app.get("/register", (req, res) => {
 
 
 app.post("/register", (req, res) => {
-
-  
-
   let user_id = generateRandomString();
   res.cookie("user_id", user_id);
   let email = req.body.email;
@@ -119,15 +136,16 @@ app.post("/register", (req, res) => {
   };
 
   if (email === "" || password === "") {
-    return res.send("Email/Password is empty.");
+    return res.status(400).send("Email/Password field cannot be empty.");
   }
   
   for (let userId in users) {
     if (users[userId].email === email) {
-      return res.send("Email address already exists.");
+      return res.status(400).send("Email address already exists. Please try again.");
     }
   }
   users[user_id] = newUser;
+  console.log(users);
   res.redirect("/urls");
   
 });
@@ -139,21 +157,3 @@ app.listen(PORT, () => {
 let generateRandomString = function() {
   return Math.random().toString(36).substring(2, 8);
 };
-
-// const emailLookup = (email, users) => {
-//   for (let userId in users) {
-//     if (users[userId].email === email) {
-//       return users[userId]; // return the user object
-//     }
-//   }
-//   return false;
-// };
-
-// const authenticateUser = (email, password, users) => {
-//   // contained the user info if found or false if not
-//   const userFound = emailLookup(email, users);
-//   if (userFound && userFound.password === password) {
-//     return userFound;
-//   }
-//   return false;
-// };
