@@ -14,7 +14,7 @@
   
 
     <% if(!username){ %>
-      <form method="POST" action="/login"><input name="username" type="text" placeholder="Username" value="<%= username %>"><button type="submit">Login</button></form>
+      <form method="GET" action="/login"><button type="submit">Login</button></form>   
       <form method="GET" action="/register"><button type="submit">Register</button></form>
     <% } else{ %>  
     <form method="POST" action="/logout">Logged In As: <%= username.email %>  <button type="submit">Logout</button></form>
