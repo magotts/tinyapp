@@ -104,22 +104,33 @@ app.get("/register", (req, res) => {
 
 
 app.post("/register", (req, res) => {
+
+  
+
   let user_id = generateRandomString();
   res.cookie("user_id", user_id);
   let email = req.body.email;
   let password = req.body.password;
+
   const newUser = {
     id: user_id,
     email,
     password
   };
-  users[user_id] = newUser;
-  console.log("email is", email);
-  console.log("password is", password);
-  console.log(users);
-  res.redirect("/urls");
-});
 
+  if (email === "" || password === "") {
+    return res.send("Email/Password is empty.");
+  }
+  
+  for (let userId in users) {
+    if (users[userId].email === email) {
+      return res.send("Email address already exists.");
+    }
+  }
+  users[user_id] = newUser;
+  res.redirect("/urls");
+  
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
@@ -128,3 +139,21 @@ app.listen(PORT, () => {
 let generateRandomString = function() {
   return Math.random().toString(36).substring(2, 8);
 };
+
+// const emailLookup = (email, users) => {
+//   for (let userId in users) {
+//     if (users[userId].email === email) {
+//       return users[userId]; // return the user object
+//     }
+//   }
+//   return false;
+// };
+
+// const authenticateUser = (email, password, users) => {
+//   // contained the user info if found or false if not
+//   const userFound = emailLookup(email, users);
+//   if (userFound && userFound.password === password) {
+//     return userFound;
+//   }
+//   return false;
+// };
