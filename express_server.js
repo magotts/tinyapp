@@ -2,11 +2,14 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
+const bcryptjs = require("bcryptjs");
 app.use(bodyParser.urlencoded({ extended: true }));
 const cookieParser = require('cookie-parser');
 
+
 app.set("view engine", "ejs");
 app.use(cookieParser());
+
 
 const users = {
   "aJ48lW": {
@@ -147,15 +150,23 @@ app.post("/urls/:shortURL", (req, res) => { /// edit the url
 
 app.post("/login", (req, res) => { /// cookie username
   const { email, password } = req.body;
+  const hashedPassword = bcryptjs.hashSync(password, 10);
+
   const user = getUserByEmail(email, users);
   if (!user) {
     return res.status(403).send("Email address is not found.");
   }
-  if (user.password !== password) {
+
+  if (!bcryptjs.compareSync(password, hashedPassword)) {
     return res.status(403).send("Wrong credentials.");
   }
+    // returns true
+  // if (user.password !== password) {
+  //   return res.status(403).send("Wrong credentials.");
+  // }
   res.cookie("user_id", user.id);
   res.redirect("/urls");
+  
 });
 
 app.get("/login", (req, res) => {
@@ -178,13 +189,14 @@ app.post("/register", (req, res) => {
   res.cookie("user_id", user_id);
   let email = req.body.email;
   let password = req.body.password;
+  const hashedPassword = bcryptjs.hashSync(password, 10);
 
   const newUser = {
     id: user_id,
     email,
     password
   };
-
+  console.log("hashed password is:", hashedPassword);
   if (email === "" || password === "") {
     return res.status(400).send("Email/Password field cannot be empty.");
   }
