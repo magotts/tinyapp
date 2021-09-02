@@ -9,8 +9,8 @@ app.set("view engine", "ejs");
 app.use(cookieParser());
 
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
+  "aJ48lW": {
+    id: "aJ48lW",
     email: "a@a.com",
     password: "aaa"
   },
@@ -76,16 +76,24 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.post("/urls", (req, res) => { // creating url
+app.post("/urls", (req, res) => { // creating new url
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
+  const userID = users[req.cookies["user_id"]].id;
   urlDatabase[shortURL] = {}; // set object first
   urlDatabase[shortURL].longURL = longURL;
+  urlDatabase[shortURL].userID = userID;
+// if (urlDatabase[shortURL].userID === userID) {
+//   // show the longurl from this userID
+//} 
+console.log("userID is:", userID);
+
+
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
