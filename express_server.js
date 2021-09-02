@@ -4,9 +4,9 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const bcryptjs = require("bcryptjs");
 app.use(bodyParser.urlencoded({ extended: true }));
-const cookieParser = require('cookie-parser');
-const cookieSession = require('cookie-session');
-
+//const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
+const { getUserByEmail } = require('./helpers');
 
 
 app.set("view engine", "ejs");
@@ -48,14 +48,7 @@ const urlDatabase = {
   }
 };
 
-const getUserByEmail = (email, users) => {
-  for (const userId in users) {
-    if (users[userId].email === email) {
-      return users[userId];
-    }
-  }
-  return false;
-};
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -66,8 +59,6 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  //console.log(req.cookies["user_id"]);
-  //const userID = req.cookies["user_id"];
   const userID = req.session["user_id"];
   const user = users[userID];
   const urls = urlsForUser(userID, urlDatabase);
@@ -93,7 +84,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const url = urlDatabase[shortURL];
   if (userID !== url.userID) {
-    return res.status(401).send("This is not your url");
+    return res.status(401).send("This is not your url.");
   }
   const templateVars = {
     shortURL: req.params.shortURL,
@@ -110,11 +101,6 @@ app.post("/urls", (req, res) => { // creating new url
   urlDatabase[shortURL] = {}; // set object first
   urlDatabase[shortURL].longURL = longURL;
   urlDatabase[shortURL].userID = userID;
-  // if (urlDatabase[shortURL].userID === userID) {
-  //   // show the longurl from this userID
-  // }
-  console.log("userID is:", userID);
-
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -159,21 +145,13 @@ app.post("/login", (req, res) => { /// cookie username
   const hashedPassword = bcryptjs.hashSync(password, 10);
 
   const user = getUserByEmail(email, users);
-  console.log("user", user);
   if (!user) {
     return res.status(403).send("Email address is not found.");
   } else if (!bcryptjs.compareSync(password, users[user.id]["password"])) {
     return res.status(403).send("Wrong credentials.");
   }
-  
-
-  // returns true
-  // if (user.password !== password) {
-  //   return res.status(403).send("Wrong credentials.");
-  // }
-  // res.cookie("user_id", user.id);
+ 
   req.session["user_id"] = user.id;
-  console.log(req.session["user_id"]);
   res.redirect("/urls");
   
 });
@@ -207,7 +185,6 @@ app.post("/register", (req, res) => {
     email,
     password
   };
-  console.log("hashed password is:", hashedPassword);
   if (email === "" || password === "") {
     return res.status(400).send("Email/Password field cannot be empty.");
   }
@@ -218,7 +195,6 @@ app.post("/register", (req, res) => {
     }
   }
   users[user_id] = newUser;
-  console.log(users);
   res.redirect("/urls");
   
 });
@@ -231,9 +207,6 @@ let generateRandomString = function() {
   return Math.random().toString(36).substring(2, 8);
 };
 
-
-// Create a function named urlsForUser(id) which returns the URLs where the userID is
-// equal to the id of the currently logged-in user.
 const urlsForUser = (userID, urlDatabase) => {
   const userURL = {};
   for (const shortURL in urlDatabase) {
