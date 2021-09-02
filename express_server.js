@@ -5,22 +5,27 @@ const bodyParser = require("body-parser");
 const bcryptjs = require("bcryptjs");
 app.use(bodyParser.urlencoded({ extended: true }));
 const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
+
 
 
 app.set("view engine", "ejs");
-app.use(cookieParser());
-
+//app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}));
 
 const users = {
   "aJ48lW": {
     id: "aJ48lW",
     email: "a@a.com",
-    password: "aaa"
+    password: bcryptjs.hashSync("aaa", 10)
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "b@b.com",
-    password: "bbb"
+    password: bcryptjs.hashSync("bbb", 10)
   }
 };
 
@@ -61,8 +66,9 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log(req.cookies["user_id"]);
-  const userID = req.cookies["user_id"];
+  //console.log(req.cookies["user_id"]);
+  //const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   const user = users[userID];
   const urls = urlsForUser(userID, urlDatabase);
   const templateVars = { urls, user };
@@ -74,7 +80,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   const user = users[userID];
   const templateVars = { user };
   
@@ -82,7 +88,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   const user = users[userID];
   const shortURL = req.params.shortURL;
   const url = urlDatabase[shortURL];
@@ -100,7 +106,7 @@ app.get("/urls/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => { // creating new url
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  const userID = users[req.cookies["user_id"]].id;
+  const userID = users[req.session["user_id"]].id;
   urlDatabase[shortURL] = {}; // set object first
   urlDatabase[shortURL].longURL = longURL;
   urlDatabase[shortURL].userID = userID;
@@ -119,7 +125,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  const user = users[req.cookies["user_id"]];
+  const user = users[req.session["user_id"]];
 
   if (!user || urlDatabase[shortURL].userID !== user.id) {
     return res.status(403).send("Error: Cannot delete other people's URL.");
@@ -131,7 +137,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => { /// edit the url
   const shortURL = req.params.shortURL;
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   if (!userID) {
     return res.redirect("/login");
   }
@@ -153,18 +159,21 @@ app.post("/login", (req, res) => { /// cookie username
   const hashedPassword = bcryptjs.hashSync(password, 10);
 
   const user = getUserByEmail(email, users);
+  console.log("user", user);
   if (!user) {
     return res.status(403).send("Email address is not found.");
-  }
-
-  if (!bcryptjs.compareSync(password, hashedPassword)) {
+  } else if (!bcryptjs.compareSync(password, users[user.id]["password"])) {
     return res.status(403).send("Wrong credentials.");
   }
-    // returns true
+  
+
+  // returns true
   // if (user.password !== password) {
   //   return res.status(403).send("Wrong credentials.");
   // }
-  res.cookie("user_id", user.id);
+  // res.cookie("user_id", user.id);
+  req.session["user_id"] = user.id;
+  console.log(req.session["user_id"]);
   res.redirect("/urls");
   
 });
@@ -175,7 +184,8 @@ app.get("/login", (req, res) => {
 
 
 app.post("/logout", (req, res) => { //logout
-  res.clearCookie("user_id");
+  // res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
@@ -186,7 +196,8 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   let user_id = generateRandomString();
-  res.cookie("user_id", user_id);
+  // res.cookie("user_id", user_id);
+  req.session["user_id"] = user_id;
   let email = req.body.email;
   let password = req.body.password;
   const hashedPassword = bcryptjs.hashSync(password, 10);
