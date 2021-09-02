@@ -12,7 +12,6 @@
 <%- include('partials/_header') %>
 <body>
   <main style="margin: 1em;">
-    <% if (username) { %>
     <h3>My URLs</h3>
     <table class="table">
       <thead>
@@ -37,19 +36,7 @@
         <% } %>
       </tbody>
     </table>
-    <% } else { %>
-      <center> <h3>You are <font color="red">not</font> logged in.</h3>
-      <main style="margin: 1em;">
-        <h5>Please Login Now</h5>
-        <p><form method="POST" action="/login">Email Address: <input type="email" name="email"></p> 
-        <p>Password: <input type="password" name="password"></p> 
-        <p><button type="submit">Login</button></p></form>
-        <p>Not registered? <a href="/register">REGISTER</a> now.</p>       </div>
-        </form></center>
-      </main>
-      </thead>
-      
-    <% } %>
+    
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
