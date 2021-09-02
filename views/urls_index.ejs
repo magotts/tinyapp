@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -20,21 +21,32 @@
           <th scope="col">Long URL</th>
           <th scope="col">Edit</th>
           <th scope="col">Delete</th>
+          <th scope="col">Created by:</th>
         </tr>
       </thead>
       <tbody>
         <% for(let url in urls) { %>
           <tr>
-            <td><%= url %> </td>
+            <td><a href="<%= urls[url].longURL %>" target="_blank"><%= url %> </a></td>
             <td><%= urls[url].longURL %></td>
             <td><form method="GET" action="/urls/<%= url %>"><button>Edit</button></form></td>
             <td><form method="POST" action="/urls/<%= url %>/delete"><button>Delete</button></form></td>
+            <td><%= urls[url].userID %></td>
+          
           </tr>
         <% } %>
       </tbody>
     </table>
     <% } else { %>
-      <h3><center>You need to be logged in. Please <a href="/login">LOGIN</a> or <a href="/register">REGISTER</a> first.</center></h3>
+      <center> <h3>You are <font color="red">not</font> logged in.</h3>
+      <main style="margin: 1em;">
+        <h5>Please Login Now</h5>
+        <p><form method="POST" action="/login">Email Address: <input type="email" name="email"></p> 
+        <p>Password: <input type="password" name="password"></p> 
+        <p><button type="submit">Login</button></p></form>
+        <p>Not registered? <a href="/register">REGISTER</a> now.</p>       </div>
+        </form></center>
+      </main>
       </thead>
       
     <% } %>
