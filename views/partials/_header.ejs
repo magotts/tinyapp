@@ -13,10 +13,10 @@
     </div>
   
 
-    <% if(!username){ %>
+    <% if(!username) { %>
       <form method="GET" action="/login"><button type="submit">Login</button></form>   
       <form method="GET" action="/register"><button type="submit">Register</button></form>
-    <% } else{ %>  
+    <% } else { %>  
     <form method="POST" action="/logout">Logged In As: <%= username.email %>  <button type="submit">Logout</button></form>
    <% } %>
 
