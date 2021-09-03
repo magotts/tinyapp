@@ -82,13 +82,8 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const userID = req.session["user_id"];
   const user = users[userID];
-
-  if (userID) {
-    const templateVars = { user };
-    res.render('urls_new', templateVars);
-  } else {
-    res.redirect('/login');
-  }
+  const templateVars = { user };
+  res.render('urls_new', templateVars);
 });
 
 // SHORTURL - GET
