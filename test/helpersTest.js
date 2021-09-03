@@ -27,6 +27,6 @@ describe("getUserByEmail", function() {
     const user = getUserByEmail("notuser@notexample.com", testUsers);
     const expectedOutput = undefined;
     // Write your assert statement here
-    assert.deepEqual(user.email, expectedOutput);
+    assert.deepEqual(user.id, expectedOutput);
   });
 });
