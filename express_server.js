@@ -77,15 +77,6 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-// CREATE NEW URL - GET
-// CHECK IF USER IS LOGGED IN BEFORE THEY CAN CREATE A NEW URL
-app.get("/urls/new", (req, res) => {
-  const userID = req.session["user_id"];
-  const user = users[userID];
-  const templateVars = { user };
-  res.render('urls_new', templateVars);
-});
-
 // SHORTURL - GET
 // ERROR WHEN USER TRIES TO ACCESS SOMEONE ELSE'S SHORTURL
 app.get("/urls/:shortURL", (req, res) => {
@@ -105,6 +96,14 @@ app.get("/urls/:shortURL", (req, res) => {
   };
 
   res.render("urls_show", templateVars);
+});
+
+// CREATE NEW URL - GET
+app.get("/urls/new", (req, res) => {
+  const userID = req.session["user_id"];
+  const user = users[userID];
+  const templateVars = { user };
+  res.render('urls_new', templateVars);
 });
 
 // CREATE NEW URL - POST
