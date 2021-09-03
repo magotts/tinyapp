@@ -7,9 +7,10 @@
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>TinyApp</title>
+  <title>Home - TinyApp</title>
 </head>
 <%- include('partials/_header') %>
+<% if (user) { %>
 <body>
   <main style="margin: 1em;">
     <h3>My URLs</h3>
@@ -21,22 +22,38 @@
           <th scope="col">Edit</th>
           <th scope="col">Delete</th>
           <th scope="col">Created by:</th>
+          <th scope="col">Date Created:</th>
         </tr>
       </thead>
       <tbody>
         <% for(let url in urls) { %>
           <tr>
-            <td><a href="<%= urls[url].longURL %>" target="_blank"><%= url %> </a></td>
+            <td><%= url %></td>
             <td><%= urls[url].longURL %></td>
             <td><form method="GET" action="/urls/<%= url %>"><button>Edit</button></form></td>
             <td><form method="POST" action="/urls/<%= url %>/delete"><button>Delete</button></form></td>
             <td><%= urls[url].userID %></td>
-          
+            <td><%= urls[url].dateCreated %></td>
           </tr>
         <% } %>
+        <% } else { %>
+          <br>
+      <center> <h3>You are <font color="red">not</font> logged in.</h3>
+      <main style="margin: 1em;">
+        <h5>Please Login Now</h5>
+        <p><form method="POST" action="/login">Email Address: <input type="email" name="email"></p> 
+        <p>Password: <input type="password" name="password"></p> 
+        <p><button type="submit" class="btn btn-primary">Login</button></p></form>
+        <p>Not registered? <a href="/register">REGISTER</a> now.</p>       </div>
+        </form></center>
+      </main>
+      </thead>
+      
+    <% } %>
+
       </tbody>
     </table>
-    
+
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
