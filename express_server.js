@@ -77,6 +77,15 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// CREATE NEW URL - GET
+// CHECK IF USER IS LOGGED IN BEFORE THEY CAN CREATE A NEW URL
+app.get("/urls/new", (req, res) => {
+  const userID = req.session["user_id"];
+  const user = users[userID];
+  const templateVars = { user };
+  res.render('urls_new', templateVars);
+});
+
 // SHORTURL - GET
 // ERROR WHEN USER TRIES TO ACCESS SOMEONE ELSE'S SHORTURL
 app.get("/urls/:shortURL", (req, res) => {
@@ -98,21 +107,13 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// CREATE NEW URL - GET
-app.get("/urls/new", (req, res) => {
-  const userID = req.session["user_id"];
-  const user = users[userID];
-  const templateVars = { user };
-  res.render('urls_new', templateVars);
-});
-
 // CREATE NEW URL - POST
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   const userID = users[req.session["user_id"]].id;
   let dateCreated = new Date().toJSON().slice(0,10).replace(/-/g,'/');
-  urlDatabase[shortURL] = {};
+  urlDatabase[shortURL] = {}; // set object first
   urlDatabase[shortURL].longURL = longURL;
   urlDatabase[shortURL].userID = userID;
   urlDatabase[shortURL].dateCreated = dateCreated;
