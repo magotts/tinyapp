@@ -3,7 +3,7 @@
 <head>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>URL - TinyApp Example</title>
+  <title>EDIT URL - TinyApp</title>
 </head>
 <%- include('partials/_header') %>
 <body>
@@ -11,11 +11,11 @@
       <div class="card-header"></div>
       <div class="card-body">
         <h5 class="card-title">TinyURL for: <%= longURL %></h5>
-        <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
+        <p class="card-text">Short URL: <a href="/u/<%= shortURL %>" target="_blank"><%= shortURL %></a></p>
       </div>
     
       <div class="card-footer text-muted">
-        <h4>Edit</h4>
+        <h4>Edit your URL below:</h4>
         <form class="form-inline" action="/urls/<%= shortURL %>" method="POST">
         <div class="form-group mb-2 mx-auto">
           <label for="edited">New URL:</label>
